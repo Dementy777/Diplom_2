@@ -1,7 +1,10 @@
 package ru.yandex.practicum.steps;
 
 import io.qameta.allure.Step;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
 import ru.yandex.practicum.models.UserPojo;
 
 import static io.restassured.RestAssured.given;
@@ -39,6 +42,20 @@ public class UserSteps {
     // Дополнительный метод для извлечения токена из ответа
     public String extractAccessToken(ValidatableResponse response) {
         return response.extract().body().jsonPath().getString("accessToken");
+    }
+    protected static RequestSpecification getSpec() {
+        return new RequestSpecBuilder()
+                .setContentType(ContentType.JSON)
+                .setBaseUri(HOST)
+                .build();
+    }
+
+    protected static RequestSpecification getSpec(String bearerPlusToken) {
+        return new RequestSpecBuilder()
+                .setContentType(ContentType.JSON)
+                .addHeader("authorization", bearerPlusToken)
+                .setBaseUri(HOST)
+                .build();
     }
 
 }
