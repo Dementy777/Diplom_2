@@ -23,15 +23,6 @@ public class OrderSteps {
                 .then();
     }
 
-    @Step("Получение заказов конкретного пользователя")
-    public static ValidatableResponse getUserOrders(String bearerPlusToken) {
-        return given()
-                .spec(getSpec(bearerPlusToken))
-                .when()
-                .get(POSTORDERS)
-                .then();
-    }
-
     @Step("Получение списка ингредиентов")
     public static ValidatableResponse getIngredients() {
         return given()
@@ -41,8 +32,8 @@ public class OrderSteps {
                 .then();
     }
 
+    @Step("Получение списка валидных ингредиентов")
     public static List<String> getValidIngredients() {
-        ValidatableResponse ingredientsResponse = OrderSteps.getIngredients();
-        return ingredientsResponse.extract().path("data._id");
+        return getIngredients().extract().path("data._id");
     }
 }

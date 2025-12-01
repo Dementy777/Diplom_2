@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class AuthorizationUserTests extends BaseTest {
-    private UserSteps userSteps = new UserSteps();
+    private final UserSteps userSteps = new UserSteps();
     private UserPojo user;
     private String createdAccessToken;
 
@@ -47,11 +47,7 @@ public class AuthorizationUserTests extends BaseTest {
     @DisplayName("Негативный тест на невозможность авторизации  пользователя с неверным емэйлом")
     @Description("Пользователь авторизуется без емэйла")
     public void errorAuthorizationWithoutEmailTest() {
-        String randomLocalPart = RandomStringUtils.randomAlphanumeric(5);
-        String domain = "example.com";
-        String email = randomLocalPart + "+" + System.currentTimeMillis() + "@" + domain;
-        user
-                .setEmail(email);
+        user.setEmail("wrong_email@example.com");
         userSteps
                 .loginUser(user)
                 .statusCode(SC_UNAUTHORIZED)
@@ -62,7 +58,7 @@ public class AuthorizationUserTests extends BaseTest {
     @DisplayName("Негативный тест на невозможность авторизации  пользователя без пароля")
     @Description("Пользователь авторизуется без пароля")
     public void errorAuthorizationWithoutPasswordTest() {
-        user.setPassword(RandomStringUtils.randomAlphanumeric(11));
+        user.setPassword("wrong_password");
         userSteps
                 .loginUser(user)
                 .statusCode(SC_UNAUTHORIZED)
@@ -72,7 +68,7 @@ public class AuthorizationUserTests extends BaseTest {
 
     @After
     public void tearDown() {
-        if (createdAccessToken != null && !createdAccessToken.isEmpty()) { // Убедимся, что мы имеем валидный токен перед удалением
+        if (createdAccessToken != null && !createdAccessToken.isEmpty()) {
             user.setAccessToken(createdAccessToken);
             userSteps.deleteUser(user).statusCode(SC_ACCEPTED);
             System.out.println("Пользователь успешно удалён.");

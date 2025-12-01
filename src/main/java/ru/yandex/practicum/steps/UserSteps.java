@@ -51,10 +51,10 @@ public class UserSteps {
                 .build();
     }
 
-    protected static RequestSpecification getSpec(String bearerPlusToken) {
+    protected static RequestSpecification getSpec(String bearerAndToken) {
         return new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
-                .addHeader("authorization", bearerPlusToken)
+                .addHeader("authorization", bearerAndToken)
                 .setBaseUri(HOST)
                 .build();
     }

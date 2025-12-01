@@ -6,7 +6,6 @@ public class UserPojo {
     private String password;
     private String name;
     private String accessToken;
-    private String refreshToken;
 
     public String getEmail() {
         return email;
@@ -41,14 +40,5 @@ public class UserPojo {
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public UserPojo setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-        return this;
     }
 }

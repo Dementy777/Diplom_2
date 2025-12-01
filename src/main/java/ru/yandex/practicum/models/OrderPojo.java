@@ -17,7 +17,7 @@ public class OrderPojo {
         return ingredients;
     }
 
-    public OrderPojo setIngredients() {
+    public OrderPojo setIngredients(List<String> ingredients) {
         this.ingredients = ingredients;
         return this;
     }

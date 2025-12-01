@@ -14,7 +14,7 @@ import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.*;
 
 public class CreateUserTests extends BaseTest {
-    private UserSteps userSteps = new UserSteps();
+    private final UserSteps userSteps = new UserSteps();
     private UserPojo user;
     private String createdAccessToken;
 
