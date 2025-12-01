@@ -30,7 +30,7 @@ public class UserSteps {
     @Step("Удаление пользователя")
     public ValidatableResponse deleteUser(UserPojo user) {
         return given()
-                .pathParam("accessToken", user.getAccessToken())
+                .header("Authorization", "Bearer " + user.getAccessToken())
                 .when()
                 .delete(DELETUSER)
                 .then();

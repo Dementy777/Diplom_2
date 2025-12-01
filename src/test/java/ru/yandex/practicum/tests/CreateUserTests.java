@@ -2,8 +2,10 @@ package ru.yandex.practicum.tests;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.yandex.practicum.models.UserPojo;
@@ -97,6 +99,22 @@ public class CreateUserTests extends BaseTest {
                 .createUser(user)
                 .statusCode(SC_FORBIDDEN)
                 .body("message", equalTo("Email, password and name are required fields"));
+    }
+
+    @After
+    public void tearDown () {
+        ValidatableResponse loginResponse = userSteps.loginUser(user);
+        if (loginResponse.extract().statusCode() == HttpStatus.SC_OK) {
+            String accessToken = loginResponse.extract().body().path("accessToken");
+            if (accessToken != null) {
+                user.setAccessToken(accessToken);
+                userSteps.deleteUser(user);
+            } else {
+                System.err.println("accessToken не найден в ответе авторизации. Удаление пользователя пропущено.");
+            }
+        } else {
+            System.err.println("Пользователь не был создан. Статус: " + loginResponse.extract().statusCode());
+        }
     }
 
 
