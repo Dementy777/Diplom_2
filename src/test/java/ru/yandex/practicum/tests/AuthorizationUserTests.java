@@ -4,7 +4,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.HttpStatus;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-public class AuthorizationUserTests extends BaseTest{
+public class AuthorizationUserTests extends BaseTest {
     private UserSteps userSteps = new UserSteps();
     private UserPojo user;
     private String createdAccessToken;
