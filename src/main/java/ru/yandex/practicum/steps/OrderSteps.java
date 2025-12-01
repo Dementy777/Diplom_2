@@ -5,6 +5,8 @@ import io.restassured.response.ValidatableResponse;
 import ru.yandex.practicum.config.RestConfig;
 import ru.yandex.practicum.models.OrderPojo;
 
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
 import static ru.yandex.practicum.config.RestConfig.POSTORDERS;
 import static ru.yandex.practicum.steps.UserSteps.getSpec;
@@ -29,6 +31,7 @@ public class OrderSteps {
                 .get(POSTORDERS)
                 .then();
     }
+
     @Step("Получение списка ингредиентов")
     public static ValidatableResponse getIngredients() {
         return given()
@@ -36,5 +39,10 @@ public class OrderSteps {
                 .when()
                 .get(RestConfig.GETINGREDIENTS) // Константа пути для получения ингредиентов
                 .then();
+    }
+
+    public static List<String> getValidIngredients() {
+        ValidatableResponse ingredientsResponse = OrderSteps.getIngredients();
+        return ingredientsResponse.extract().path("data._id");
     }
 }

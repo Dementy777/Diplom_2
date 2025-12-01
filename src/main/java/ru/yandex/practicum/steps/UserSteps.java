@@ -43,6 +43,7 @@ public class UserSteps {
     public String extractAccessToken(ValidatableResponse response) {
         return response.extract().body().jsonPath().getString("accessToken");
     }
+
     protected static RequestSpecification getSpec() {
         return new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)

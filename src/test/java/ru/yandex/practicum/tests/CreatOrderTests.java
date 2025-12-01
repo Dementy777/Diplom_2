@@ -13,12 +13,11 @@ import ru.yandex.practicum.steps.UserSteps;
 
 import java.util.List;
 
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-public class CreatOrderTests extends BaseTest{
+public class CreatOrderTests extends BaseTest {
 
     private UserSteps userSteps = new UserSteps();
     private OrderSteps orderSteps = new OrderSteps();
@@ -44,7 +43,7 @@ public class CreatOrderTests extends BaseTest{
     @Description("Проверка успешного создания заказа с авторизацией и корректными ингредиентами")
     public void shouldCreateOrderWithAuthAndIngredients() {
         // Получаем правильные ингредиенты
-        List<String> validIngredients = getValidIngredients();
+        List<String> validIngredients = orderSteps.getValidIngredients();
         OrderPojo order = new OrderPojo(validIngredients);
 
         // Авторизуемся
@@ -73,23 +72,26 @@ public class CreatOrderTests extends BaseTest{
     @DisplayName("Создание заказа без ингредиентов")
     @Description("Проверка возможности создания заказа без выбора ингредиентов")
     public void shouldFailToCreateOrderWithoutIngredients() {
-        // Попытка создать заказ без выбора ингредиентов
-        OrderPojo emptyOrder = new OrderPojo();                       // Заказ без ингредиентов
-        ValidatableResponse loginResponse = userSteps.loginUser(user); // Авторизуем пользователя
-        createdAccessToken = userSteps.extractAccessToken(loginResponse); // Извлекаем токен
-        user.setAccessToken(createdAccessToken);                      // Устанавливаем токен
-        ValidatableResponse response = orderSteps.createOrder(emptyOrder, createdAccessToken); // Отправляем пустой заказ
-        response.body("success", equalTo(false));                    // Проверяем неудачу операции
+
+        OrderPojo emptyOrder = new OrderPojo();
+        ValidatableResponse loginResponse = userSteps.loginUser(user);
+        createdAccessToken = userSteps.extractAccessToken(loginResponse);
+        user.setAccessToken(createdAccessToken);
+        ValidatableResponse response = orderSteps.createOrder(emptyOrder, createdAccessToken);
+        response.body("success", equalTo(false));
     }
 
-
-
-
-
-
-    // Утилитарный метод для получения массива ингредиентов
-    private List<String> getValidIngredients() {
-        ValidatableResponse ingredientsResponse = OrderSteps.getIngredients(); // Обратите внимание на использование OrderSteps
-        return ingredientsResponse.extract().path("data._id");
+    @Test
+    @DisplayName("Создание заказа с неверным хешем ингредиентов")
+    @Description("Проверка невозможности создания заказа с неверным набором ингредиентов")
+    public void shouldFailToCreateOrderWithInvalidHash() {
+        List<String> invalidIngredients = List.of("invalid_ingredient_hash");
+        OrderPojo fakeOrder = new OrderPojo(invalidIngredients);
+        ValidatableResponse loginResponse = userSteps.loginUser(user);
+        createdAccessToken = userSteps.extractAccessToken(loginResponse);
+        user.setAccessToken(createdAccessToken);
+        ValidatableResponse response = orderSteps.createOrder(fakeOrder, createdAccessToken);
+        response.statusCode(SC_INTERNAL_SERVER_ERROR);
     }
+
 }

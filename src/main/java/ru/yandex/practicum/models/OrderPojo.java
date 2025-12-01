@@ -10,16 +10,17 @@ public class OrderPojo {
         this.ingredients = ingredients;
     }
 
-    public OrderPojo(){
+    public OrderPojo() {
     }
 
-    public  List<String> getIngredients() {
+    public List<String> getIngredients() {
         return ingredients;
     }
 
-    public OrderPojo setIngredients(){
-        this.ingredients=ingredients;
+    public OrderPojo setIngredients() {
+        this.ingredients = ingredients;
         return this;
     }
+
 
 }
