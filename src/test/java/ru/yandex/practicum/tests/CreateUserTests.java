@@ -66,7 +66,7 @@ public class CreateUserTests extends BaseTest {
 
     @Test
     @DisplayName("Проверка на невозможность создание пользователя без пароля")
-    @Description("Негативный тест на невозможность создания пользователя без обязательного  без  поля  пароль")
+    @Description("Негативный тест на невозможность создания пользователя без обязательного поля  пароль")
     public void shouldNotCreateUserWithoutPassword() {
         user.setPassword("");
         userSteps
@@ -77,8 +77,21 @@ public class CreateUserTests extends BaseTest {
 
     @Test
     @DisplayName("Проверка на невозможность создание пользователя без имени")
-    @Description("Негативный тест на невозможность создания пользователя без обязательного  без  поля  имя")
+    @Description("Негативный тест на невозможность создания пользователя без обязательного поля  имя")
     public void shouldNotCreateUserWithoutName() {
+        user.setName("");
+        userSteps
+                .createUser(user)
+                .statusCode(SC_FORBIDDEN)
+                .body("message", equalTo("Email, password and name are required fields"));
+    }
+
+    @Test
+    @DisplayName("Проверка на невозможность создание пользователя без емэйла пароля и имени")
+    @Description("Негативный тест на невозможность создания пользователя без обязательных  полей  емэйла пароля и имени")
+    public void shouldNotCreateUserWithEmptyFields() {
+        user.setEmail("");
+        user.setPassword("");
         user.setName("");
         userSteps
                 .createUser(user)
