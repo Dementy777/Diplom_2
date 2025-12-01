@@ -14,6 +14,7 @@ import ru.yandex.practicum.steps.UserSteps;
 import java.util.List;
 
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
@@ -58,6 +59,31 @@ public class CreatOrderTests extends BaseTest{
                 .body("success", equalTo(true))
                 .body("order.number", notNullValue());
     }
+
+    @Test
+    @DisplayName("Создание заказа без авторизации")
+    @Description("Проверка попытки создать заказ без авторизации")
+    public void shouldFailToCreateOrderWithoutAuth() {
+        OrderPojo emptyOrder = new OrderPojo();
+        ValidatableResponse response = orderSteps.createOrder(emptyOrder, null);
+        response.statusCode(SC_UNAUTHORIZED);
+    }
+
+    @Test
+    @DisplayName("Создание заказа без ингредиентов")
+    @Description("Проверка возможности создания заказа без выбора ингредиентов")
+    public void shouldFailToCreateOrderWithoutIngredients() {
+        // Попытка создать заказ без выбора ингредиентов
+        OrderPojo emptyOrder = new OrderPojo();                       // Заказ без ингредиентов
+        ValidatableResponse loginResponse = userSteps.loginUser(user); // Авторизуем пользователя
+        createdAccessToken = userSteps.extractAccessToken(loginResponse); // Извлекаем токен
+        user.setAccessToken(createdAccessToken);                      // Устанавливаем токен
+        ValidatableResponse response = orderSteps.createOrder(emptyOrder, createdAccessToken); // Отправляем пустой заказ
+        response.body("success", equalTo(false));                    // Проверяем неудачу операции
+    }
+
+
+
 
 
 
