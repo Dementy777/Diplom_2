@@ -13,7 +13,7 @@ public class OrderPojo {
     public OrderPojo(){
     }
 
-    public List<String> getIngredients() {
+    public  List<String> getIngredients() {
         return ingredients;
     }
 

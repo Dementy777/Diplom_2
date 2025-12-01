@@ -2,6 +2,7 @@ package ru.yandex.practicum.steps;
 
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
+import ru.yandex.practicum.config.RestConfig;
 import ru.yandex.practicum.models.OrderPojo;
 
 import static io.restassured.RestAssured.given;
@@ -26,6 +27,14 @@ public class OrderSteps {
                 .spec(getSpec(bearerPlusToken))
                 .when()
                 .get(POSTORDERS)
+                .then();
+    }
+    @Step("Получение списка ингредиентов")
+    public static ValidatableResponse getIngredients() {
+        return given()
+                .spec(getSpec()) // Используйте спецификацию запроса
+                .when()
+                .get(RestConfig.GETINGREDIENTS) // Константа пути для получения ингредиентов
                 .then();
     }
 }
