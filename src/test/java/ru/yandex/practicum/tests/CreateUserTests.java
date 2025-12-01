@@ -75,5 +75,17 @@ public class CreateUserTests extends BaseTest {
                 .body("message", equalTo("Email, password and name are required fields"));
     }
 
+    @Test
+    @DisplayName("Проверка на невозможность создание пользователя без имени")
+    @Description("Негативный тест на невозможность создания пользователя без обязательного  без  поля  имя")
+    public void shouldNotCreateUserWithoutName() {
+        user.setName("");
+        userSteps
+                .createUser(user)
+                .statusCode(SC_FORBIDDEN)
+                .body("message", equalTo("Email, password and name are required fields"));
+    }
+
+
 
 }
