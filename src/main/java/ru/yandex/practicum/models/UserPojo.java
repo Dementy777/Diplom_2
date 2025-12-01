@@ -2,18 +2,18 @@ package ru.yandex.practicum.models;
 
 public class UserPojo {
 
-    private String login;
+    private String email;
     private String password;
-    private String firstName;
+    private String name;
     private String accessToken;
     private String refreshToken;
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public UserPojo setLogin(String login) {
-        this.login = login;
+    public UserPojo setEmail(String email) {
+        this.email = email;
         return this;
     }
 
@@ -26,12 +26,12 @@ public class UserPojo {
         return this;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public UserPojo setFirstName(String firstName) {
-        this.firstName = firstName;
+    public UserPojo setName(String name) {
+        this.name = name;
         return this;
     }
 
