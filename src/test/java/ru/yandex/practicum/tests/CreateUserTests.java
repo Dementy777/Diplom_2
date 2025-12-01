@@ -4,27 +4,27 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.yandex.practicum.models.UserPojo;
 import ru.yandex.practicum.steps.UserSteps;
 
-import static org.apache.http.HttpStatus.SC_FORBIDDEN;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.*;
 
 public class CreateUserTests extends BaseTest {
     private UserSteps userSteps = new UserSteps();
     private UserPojo user;
+    private String createdAccessToken;
+
 
     @Before
     public void setUp() {
         user = new UserPojo();
         String randomLocalPart = RandomStringUtils.randomAlphanumeric(5);
         String domain = "example.com";
-        String email = randomLocalPart + "@" + domain;
+        String email = randomLocalPart + "+" + System.currentTimeMillis() + "@" + domain;
         user
                 .setEmail(email)
                 .setPassword(RandomStringUtils.randomAlphanumeric(11))
@@ -35,24 +35,18 @@ public class CreateUserTests extends BaseTest {
     @DisplayName("Проверка на создание пользователя")
     @Description("Позитивный тест на создание пользователя с заполненными полями")
     public void shouldCreateUserTest() {
-        userSteps
-                .createUser(user)
-                .statusCode(SC_OK)
-                .body("accessToken", notNullValue());
+        ValidatableResponse response = userSteps.createUser(user).statusCode(SC_OK);
+        createdAccessToken = userSteps.extractAccessToken(response); // Сохраняем доступный токен
+        response.body("accessToken", notNullValue()); // Проверяем наличие токена
     }
 
     @Test
     @DisplayName("Проверка на невозможность создания одинаковых пользователей")
     @Description("Негативный тест на невозможность создание одинаковых пользователей")
-    public void  impossibleCreateIdenticalUsersTest() {
-        userSteps
-                .createUser(user)
-                .statusCode(SC_OK)
-                .body("accessToken", notNullValue());
-        userSteps
-                .createUser(user)
-                .statusCode(SC_FORBIDDEN)
-                .body("message", equalTo("User already exists"));
+    public void impossibleCreateIdenticalUsersTest() {
+        ValidatableResponse response = userSteps.createUser(user);
+        createdAccessToken = userSteps.extractAccessToken(response);
+        userSteps.createUser(user).statusCode(SC_FORBIDDEN).body("message", equalTo("User already exists"));
     }
 
     @Test
@@ -102,21 +96,13 @@ public class CreateUserTests extends BaseTest {
     }
 
     @After
-    public void tearDown () {
-        ValidatableResponse loginResponse = userSteps.loginUser(user);
-        if (loginResponse.extract().statusCode() == HttpStatus.SC_OK) {
-            String accessToken = loginResponse.extract().body().path("accessToken");
-            if (accessToken != null) {
-                user.setAccessToken(accessToken);
-                userSteps.deleteUser(user);
-            } else {
-                System.err.println("accessToken не найден в ответе авторизации. Удаление пользователя пропущено.");
-            }
+    public void tearDown() {
+        if (createdAccessToken != null && !createdAccessToken.isEmpty()) { // Убедимся, что мы имеем валидный токен перед удалением
+            user.setAccessToken(createdAccessToken);
+            userSteps.deleteUser(user).statusCode(SC_ACCEPTED);
+            System.out.println("Пользователь успешно удалён.");
         } else {
-            System.err.println("Пользователь не был создан. Статус: " + loginResponse.extract().statusCode());
+            System.out.println("Пользователь не был создан или токен отсутствует. Удаление не требуется.");
         }
     }
-
-
-
 }

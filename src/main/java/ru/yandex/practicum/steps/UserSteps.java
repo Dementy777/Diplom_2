@@ -9,14 +9,14 @@ import static ru.yandex.practicum.config.RestConfig.*;
 
 public class UserSteps {
 
-@Step("Создание пользователя")
-  public ValidatableResponse createUser(UserPojo user){
-    return given()
-            .body(user)
-            .when()
-            .post(POSTREGISTER)
-            .then();
-}
+    @Step("Создание пользователя")
+    public ValidatableResponse createUser(UserPojo user) {
+        return given()
+                .body(user)
+                .when()
+                .post(POSTREGISTER)
+                .then();
+    }
 
     @Step("Авторизация пользователя")
     public ValidatableResponse loginUser(UserPojo user) {
@@ -30,10 +30,15 @@ public class UserSteps {
     @Step("Удаление пользователя")
     public ValidatableResponse deleteUser(UserPojo user) {
         return given()
-                .header("Authorization", "Bearer " + user.getAccessToken())
+                .header("Authorization", user.getAccessToken())
                 .when()
                 .delete(DELETUSER)
                 .then();
+    }
+
+    // Дополнительный метод для извлечения токена из ответа
+    public String extractAccessToken(ValidatableResponse response) {
+        return response.extract().body().jsonPath().getString("accessToken");
     }
 
 }
