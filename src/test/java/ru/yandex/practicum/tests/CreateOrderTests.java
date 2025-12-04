@@ -18,8 +18,7 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static ru.yandex.practicum.config.RestConfig.HOST;
 import static ru.yandex.practicum.config.RestConfig.POSTORDERS;
 
@@ -79,7 +78,8 @@ public class CreateOrderTests extends BaseTest {
                 .post(POSTORDERS)
                 .then();
         response
-                .statusCode(SC_OK);
+                .statusCode(SC_OK)
+                .body("success", equalTo(true));
     }
 
     @Test
@@ -92,7 +92,10 @@ public class CreateOrderTests extends BaseTest {
         createdAccessToken = userSteps.extractAccessToken(loginResponse);
         user.setAccessToken(createdAccessToken);
         ValidatableResponse response = orderSteps.createOrder(emptyOrder, createdAccessToken);
-        response.body("success", equalTo(false));
+        response
+                .statusCode(SC_BAD_REQUEST)
+                .body("success", equalTo(false))
+                .body("message", equalTo("Ingredient ids must be provided"));
     }
 
     @Test
@@ -105,7 +108,9 @@ public class CreateOrderTests extends BaseTest {
         createdAccessToken = userSteps.extractAccessToken(loginResponse);
         user.setAccessToken(createdAccessToken);
         ValidatableResponse response = orderSteps.createOrder(fakeOrder, createdAccessToken);
-        response.statusCode(SC_INTERNAL_SERVER_ERROR);
+        response
+                .statusCode(SC_INTERNAL_SERVER_ERROR)
+                .body(containsString("Internal Server Error"));
     }
 
 }
