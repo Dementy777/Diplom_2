@@ -30,8 +30,11 @@ public class AuthorizationUserTests extends BaseTest {
                 .setEmail(email)
                 .setPassword(RandomStringUtils.randomAlphanumeric(11))
                 .setName(RandomStringUtils.randomAlphanumeric(10));
-        userSteps
-                .createUser(user);
+        ValidatableResponse createResponse = userSteps.createUser(user).statusCode(SC_OK);
+        createdAccessToken = userSteps.extractAccessToken(createResponse); // <-- ТОКЕН ПОЛУЧАЕМ ЗДЕСЬ!
+
+        // 4. Сохраняем токен в объект пользователя (на будущее)
+        user.setAccessToken(createdAccessToken);
     }
 
     @Test
@@ -39,7 +42,6 @@ public class AuthorizationUserTests extends BaseTest {
     @Description("Пользователь успешно авторизуется")
     public void shouldLoginUserTest() {
         ValidatableResponse response = userSteps.loginUser(user).statusCode(SC_OK);
-        createdAccessToken = userSteps.extractAccessToken(response); // Сохраняем доступный токен
         response.body("accessToken", notNullValue());
     }
 
@@ -69,11 +71,10 @@ public class AuthorizationUserTests extends BaseTest {
     @After
     public void tearDown() {
         if (createdAccessToken != null && !createdAccessToken.isEmpty()) {
-            user.setAccessToken(createdAccessToken);
             userSteps.deleteUser(user).statusCode(SC_ACCEPTED);
             System.out.println("Пользователь успешно удалён.");
         } else {
-            System.out.println("Пользователь не был авторизован или токен отсутствует. Удаление не требуется.");
+            System.out.println("Токен не был получен. Удаление пользователя невозможно.");
         }
     }
 
